@@ -27,12 +27,12 @@ import Playgrounds
 
 struct ContentView: View {
     
-    @Binding var currentTheme: Themes
+    @Binding var currentTheme: DesignSystem.Themes
     
     var body: some View {
         VStack {
             Picker("Theme", selection: $currentTheme) {
-                ForEach(Themes.allCases) { theme in
+                ForEach(DesignSystem.Themes.allCases) { theme in
                     Text(theme.rawValue).tag(theme)
                 }
             }
@@ -46,17 +46,54 @@ struct ContentView: View {
             }
             
             MyButton(text: "Olha esse botão primário", color: currentTheme.primary)
+                .typography(style: .button, theme: currentTheme)
+            
             MyButton(text: "Olha esse botão secundário", color: currentTheme.second)
+                .typography(style: .button, theme: currentTheme)
+            
             MyButton(text: "Olha esse botão terciário", color: currentTheme.third)
+                .typography(style: .button, theme: currentTheme)
+            
             MyButton(text: "Olha esse botão quaternário", color: currentTheme.four)
+                .typography(style: .button, theme: currentTheme)
+            
             MyButton(text: "Olha esse botão (quinto)", color: currentTheme.five)
+                .typography(style: .button, theme: currentTheme)
+            
+            
+            Spacer()
+            
+            Text("Olha esse title!")
+                .typography(style: .title, theme: currentTheme)
+            Text("Olha esse body!")
+                .typography(style: .body, theme: currentTheme)
+            Text("Olha esse caption!")
+                .typography(style: .caption, theme: currentTheme)
+            
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .hideStatusBar(true)
+        .overlay(alignment: .top) {
+            newStatusBar(theme: $currentTheme)
+                .ignoresSafeArea(edges: .top)
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func hideStatusBar(_ hidden: Bool) -> some View {
+        if #available(iOS 27, *) {
+            self.toolbarVisibility(hidden ? .hidden : .visible, for: .statusBar)
+        } else {
+            self.statusBarHidden(hidden)
+        }
     }
 }
 
 #Preview {
-    @Previewable @State var currentTheme: Themes = .first
+    @Previewable @State var currentTheme: DesignSystem.Themes = .first
     ContentView(currentTheme: $currentTheme)
 }
 

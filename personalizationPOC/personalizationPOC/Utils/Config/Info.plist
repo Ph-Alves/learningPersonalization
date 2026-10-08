@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>BitcountInk-VariableFont_CRSV,ELSH,ELXP,SZP1,SZP2,XPN1,XPN2,YPN1,YPN2,slnt,wght.ttf</string>
+		<string>ComicSansMS3.ttf</string>
+		<string>Isometra-Regular.ttf</string>
+		<string>LibreCaslonCondensed-VariableFont_wght.ttf</string>
+		<string>Roboto-VariableFont_wdth,wght.ttf</string>
+	</array>
+</dict>
+</plist>
