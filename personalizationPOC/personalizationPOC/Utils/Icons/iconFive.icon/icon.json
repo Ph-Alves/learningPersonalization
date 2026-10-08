@@ -1,0 +1,14 @@
+{
+  "fill" : {
+    "automatic-gradient" : "display-p3:0.16902,0.96783,0.13549,1.00000"
+  },
+  "groups" : [
+
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
