@@ -13,15 +13,13 @@ struct MyButton: View {
     
     var body: some View {
         VStack {
-            Button(action: {
-                
-            }, label: {
+            Button(action: {}, label: {
                 Text(text)
             })
             .padding()
             .tint(.white)
             .background(color)
-            .animation(.easeInOut(duration: 1.0), value: color)
+//            .animation(.easeInOut(duration: 1.0), value: color)
             .clipShape(Capsule())
             .glassEffect()
         }

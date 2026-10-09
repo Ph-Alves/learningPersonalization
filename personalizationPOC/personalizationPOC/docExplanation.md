@@ -1,6 +1,6 @@
 
 # Como funciona o codigo
-Esse codigo e bem mais simples que o de foundations, ele funciona com um design system dois componentes e uma view principal, o resto e config e codigos simples (fiz um modificador de view tambem que vou explicar sobre ele!)
+Esse codigo e bem mais simples que o de foundations, ele funciona com um design system dois componentes e uma view principal com animacao e outra sem, o resto e config e codigos simples (fiz um modificador de view tambem que vou explicar sobre ele!)
 
 -
 ## Design System (a base)
@@ -378,4 +378,104 @@ struct MyButton: View {
     }
 }
 ```
-Ele usa o .animation com o valor de cor, e como cor e dinamico e sempre muda com o tema, a view muda tambem na sua reestruturacao
+Ele usa o .animation com o valor de cor, e como cor e dinamico e sempre muda com o tema, a view muda tambem na sua reestruturacao.
+Outro ponto, e que pra animation nesse caso de troca de tema, colocar uma progressView ou algo do tipo nao compensa pois a troca e bem rapida e nao tem loading para ser feito, entao o ideal e que seja trocado o tema na hora ou que a troca tenha animaçao.
+Mas algo sobre a animaçao que e interessante, a animacao pode travar a tela na mudanca dependendo da fonte ou quantidade de itens a serem renderizados, entao temos que valorizar se a animacao realmente compensa dependendo do que vamos fazer, vale o teste em toda view construida.
+de maneira geral, usamos no codigo .animation com algum valor base para observar a alteracao, nesse codigo voce vai ver na contentView, uma animacao no onAppear que pega uma variavel e torna true com withAnimation, e isso anima a tela por que o offset e o opacity da view estao em valores que deixam a view desalinhada e invisivel quando false e volta pro normal como true, permitindo o sistema analisar.
+a view com animaçao:
+```
+struct ContentView: View {
+    
+    @Binding var currentTheme: DesignSystem.Themes
+    @State private var hasAppeared = false
+    @State private var changingTheme: Bool = false
+    
+    var body: some View {
+        VStack {
+            VStack {
+                Picker("Theme", selection: $currentTheme) {
+                    ForEach(DesignSystem.Themes.allCases) { theme in
+                        Text(theme.rawValue).tag(theme)
+                    }
+                }
+                .tint(.primary)
+                .onChange(of: currentTheme) { _, newTheme in
+                    changingTheme = true
+                    UIApplication.shared.setAlternateIconName(newTheme == .first ? nil : newTheme.icon) { error in
+                        if let error {
+                            print("Erro ao trocar de ícone: \(error)")
+                        }
+                    }
+                    changingTheme = false
+                }
+                
+                MyButton(text: "Olha esse botão primário", color: currentTheme.primary)
+                    .typography(style: .button, theme: currentTheme)
+                    
+                
+                MyButton(text: "Olha esse botão secundário", color: currentTheme.second)
+                    .typography(style: .button, theme: currentTheme)
+                    
+                
+                MyButton(text: "Olha esse botão terciário", color: currentTheme.third)
+                    .typography(style: .button, theme: currentTheme)
+                    
+                
+                MyButton(text: "Olha esse botão quaternário", color: currentTheme.four)
+                    .typography(style: .button, theme: currentTheme)
+                    
+                
+                MyButton(text: "Olha esse botão (quinto)", color: currentTheme.five)
+                    .typography(style: .button, theme: currentTheme)
+                    
+                
+                
+                Spacer()
+                
+                Text("Olha esse title!")
+                    .typography(style: .title, theme: currentTheme)
+                Text("Olha esse body!")
+                    .typography(style: .body, theme: currentTheme)
+                Text("Olha esse caption!")
+                    .typography(style: .caption, theme: currentTheme)
+                
+                Spacer()
+            }
+            .animation(.easeInOut(duration: 0.4), value: currentTheme)
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 40)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.8)) {
+                    hasAppeared = true
+                }
+            }
+            .onDisappear {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    hasAppeared = false
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .hideStatusBar(true)
+        .overlay(alignment: .top) {
+            newStatusBar(theme: $currentTheme)
+                .ignoresSafeArea(edges: .top)
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func hideStatusBar(_ hidden: Bool) -> some View {
+        if #available(iOS 27, *) {
+            self.toolbarVisibility(hidden ? .hidden : .visible, for: .statusBar)
+        } else {
+            self.statusBarHidden(hidden)
+        }
+    }
+}
+```
+
+Como pode ver, temos um offset + opacity que fica em certos valores, mas observam a mudança de hasAppeared, e ao alterar o hasAppeared ele volta ao valor padrao, e como colocamos o withAnimation, assim que a view aparecer, ela seta true e as mudanças da view sao animadas por conta disso.
+o onDisappear e pra voltar a variavel e animar a mudança de saida, e permitir a animaçao rodar de novo na proxima vez que a view aparecer.
+tambem temos o .animation, que permite rodar uma animacao na mudança de um valor 

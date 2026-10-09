@@ -1,35 +1,14 @@
+//
+//  OtherView.swift
+//  personalizationPOC
+//
+//  Created by Paulo Henrique Costa Alves on 09/10/26.
+//
+
 import SwiftUI
-import Playgrounds
 
-/*
- Objetivo
- Validar a criação de um sistema de personalização visual que permita adaptar a identidade do app a diferentes temas.
-
- Escopo
-
- Criar 4 temas visuais distintos.
-
- Adaptar para cada tema:
-    Ícones;
-    Tipografia;
-    Paleta de cores;
-    Elementos visuais da interface;
-    Elementos do sistema, como Status Bar (hora, bateria, sinal etc.).
- 
- - Estruturar o sistema para que os componentes do app se adaptem automaticamente ao tema selecionado.
- - Garantir consistência visual entre as telas, componentes e elementos do sistema.
- - Validar a troca de tema em tempo de execução.
- - Garantir que os elementos nativos, como a Status Bar, também respeitem a identidade visual de cada tema.
-
- Critério de aceite
- POC funcional com 4 temas, em que a seleção de um tema altera automaticamente ícones, fontes, cores, elementos da interface e elementos do sistema (como Status Bar), mantendo a consistência visual em todo o app.
- */
-
-struct ContentView: View {
-    
+struct OtherView: View {
     @Binding var currentTheme: DesignSystem.Themes
-    @State private var hasAppeared = false
-    @State private var changingTheme: Bool = false
     
     var body: some View {
         VStack {
@@ -41,34 +20,27 @@ struct ContentView: View {
                 }
                 .tint(.primary)
                 .onChange(of: currentTheme) { _, newTheme in
-                    changingTheme = true
                     UIApplication.shared.setAlternateIconName(newTheme == .first ? nil : newTheme.icon) { error in
                         if let error {
                             print("Erro ao trocar de ícone: \(error)")
                         }
                     }
-                    changingTheme = false
                 }
                 
                 MyButton(text: "Olha esse botão primário", color: currentTheme.primary)
                     .typography(style: .button, theme: currentTheme)
-                    
                 
                 MyButton(text: "Olha esse botão secundário", color: currentTheme.second)
                     .typography(style: .button, theme: currentTheme)
-                    
                 
                 MyButton(text: "Olha esse botão terciário", color: currentTheme.third)
                     .typography(style: .button, theme: currentTheme)
-                    
                 
                 MyButton(text: "Olha esse botão quaternário", color: currentTheme.four)
                     .typography(style: .button, theme: currentTheme)
-                    
                 
                 MyButton(text: "Olha esse botão (quinto)", color: currentTheme.five)
                     .typography(style: .button, theme: currentTheme)
-                    
                 
                 
                 Spacer()
@@ -82,19 +54,6 @@ struct ContentView: View {
                 
                 Spacer()
             }
-            .animation(.easeInOut(duration: 0.4), value: currentTheme)
-            .opacity(hasAppeared ? 1 : 0)
-            .offset(y: hasAppeared ? 0 : 40)
-            .onAppear {
-                withAnimation(.easeOut(duration: 0.8)) {
-                    hasAppeared = true
-                }
-            }
-            .onDisappear {
-                withAnimation(.easeInOut(duration: 0.8)) {
-                    hasAppeared = false
-                }
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .hideStatusBar(true)
@@ -105,22 +64,7 @@ struct ContentView: View {
     }
 }
 
-extension View {
-    @ViewBuilder
-    func hideStatusBar(_ hidden: Bool) -> some View {
-        if #available(iOS 27, *) {
-            self.toolbarVisibility(hidden ? .hidden : .visible, for: .statusBar)
-        } else {
-            self.statusBarHidden(hidden)
-        }
-    }
-}
-
 #Preview {
     @Previewable @State var currentTheme: DesignSystem.Themes = .first
-    ContentView(currentTheme: $currentTheme)
-}
-
-#Playground {
-    _ = 1 + 2
+    OtherView(currentTheme: $currentTheme)
 }

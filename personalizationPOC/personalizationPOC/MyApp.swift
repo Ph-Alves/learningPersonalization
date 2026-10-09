@@ -6,11 +6,7 @@ import SwiftUI
     
     var body: some Scene {
         WindowGroup {
-            ContentView(currentTheme: $currentTheme)
-                .background(
-                    currentTheme.backgroundGradient
-                )
-                .animation(.easeInOut(duration: 1.0), value: currentTheme)
+            TabBarView(currentTheme: $currentTheme)
         }
     }
 }
